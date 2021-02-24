@@ -57,7 +57,7 @@ class TwitchChatCommand {
    *
    * @param {TwitchChatMessage} msg Message sent
    * @param {Array} parameters Message arguments
-   * @memberof TwichChatCommand
+   * @memberof TwitchChatCommand
    * @async
    * @private
    */
