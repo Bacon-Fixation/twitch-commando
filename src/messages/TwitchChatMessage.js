@@ -33,7 +33,7 @@ class TwitchChatMessage {
    * @return {String}
    */
   get text() {
-    return this.originalMessage.message;
+    return this.originalMessage.text;
   }
 
   /**
