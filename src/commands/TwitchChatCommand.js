@@ -1,5 +1,5 @@
-const TwitchCommandoClient = require('../client/TwitchCommandoClient');
-const TwitchChatMessage = require('../messages/TwitchChatMessage');
+const TwitchCommandoClient = require("../client/TwitchCommandoClient");
+const TwitchChatMessage = require("../messages/TwitchChatMessage");
 
 /**
  * Command argument
@@ -7,8 +7,8 @@ const TwitchChatMessage = require('../messages/TwitchChatMessage');
  * @property {String} name Argument key name
  * @property {Object} type Argument type
  * @property {Object} defaultValue Argument default value
-*/
- 
+ */
+
 /**
  * Command Options
  * @typedef {Object} CommandOptions
@@ -26,122 +26,108 @@ const TwitchChatMessage = require('../messages/TwitchChatMessage');
  * @property {Boolean} privmsgOnly Restricted to privmsg only
  */
 
- /**
+/**
  * Base class to implement custom commands
  * @class
  */
-class TwichChatCommand
-{
+class TwitchChatCommand {
+  /**
+   *Creates an instance of TwitchChatCommand.
+   * @param {TwitchCommandoClient} client The TwitchCommandoClient
+   * @param {CommandOptions} options Command options
+   * @memberof TwitchChatCommand
+   */
+  constructor(client, options) {
+    this.options = options;
+    this.client = client;
+  }
 
-    /**
-     *Creates an instance of TwichChatCommand.
-     * @param {TwitchCommandoClient} client The TwitchCommandoClient
-     * @param {CommandOptions} options Command options
-     * @memberof TwichChatCommand
-     */
-    constructor(client, options)
-    {
-        this.options = options;
-        this.client = client;
-    }
-    
-    /**
-     * Method called when command is executed
-     *
-     * @param {TwitchChatMessage} msg Message received
-     * @param {object} parameters Arguments parsed
-     * @memberof TwichChatCommand
-     * @async
-     */
-    async run(msg, parameters)
-    {
+  /**
+   * Method called when command is executed
+   *
+   * @param {TwitchChatMessage} msg Message received
+   * @param {object} parameters Arguments parsed
+   * @memberof TwitchChatCommand
+   * @async
+   */
+  async run(msg, parameters) {}
 
-    }
+  /**
+   * Prepare the command to be executed
+   *
+   * @param {TwitchChatMessage} msg Message sent
+   * @param {Array} parameters Message arguments
+   * @memberof TwichChatCommand
+   * @async
+   * @private
+   */
+  async prepareRun(msg, parameters) {
+    var namedParameters = {};
 
-
-    /**
-     * Prepare the command to be executed
-     *
-     * @param {TwitchChatMessage} msg Message sent
-     * @param {Array} parameters Message arguments
-     * @memberof TwichChatCommand
-     * @async
-     * @private
-     */
-    async prepareRun(msg, parameters)
-    {
-        var namedParameters = {};
-
-        if (this.options.args && this.options.args.length > 0)
-        {
-            for (var i = 0; i < this.options.args.length; i++)
-            {
-                if (typeof parameters[i] != 'undefined')
-                {
-                    namedParameters[this.options.args[i].name] = parameters[i];
-                }
-                else
-                {
-                    if (this.options.args[i].defaultValue != undefined)
-                        namedParameters[this.options.args[i].name] = this.options.args[i].defaultValue;
-                    else
-                        namedParameters[this.options.args[i].name] = '';
-                }
-            }
+    if (this.options.args && this.options.args.length > 0) {
+      for (var i = 0; i < this.options.args.length; i++) {
+        if (typeof parameters[i] != "undefined") {
+          namedParameters[this.options.args[i].name] = parameters[i];
+        } else {
+          if (this.options.args[i].defaultValue != undefined)
+            namedParameters[this.options.args[i].name] = this.options.args[
+              i
+            ].defaultValue;
+          else namedParameters[this.options.args[i].name] = "";
         }
-
-        await this.run(msg, namedParameters);
+      }
     }
 
+    await this.run(msg, namedParameters);
+  }
 
-    /**
-     * Pre validation before to known if can execute command
-     *
-     * @private
-     * @param {TwitchChatMessage} msg
-     * @returns {String} Validation error. Empty if no error
-     * @memberof TwichChatCommand
-     */
-    preValidate(msg)
-    {
-        if (msg.messageType != 'whisper' && this.options.privmsgOnly)
-        {
-            return 'This command is available only via private message';
-        }
-
-        if (this.options.botChannelOnly)
-        {
-            if (msg.channel.name != '#' + this.client.getUsername())
-                return 'This command can be executed only in the bot channel. Please head to https://twitch.tv/' + this.client.getUsername();
-        }
-        
-        if (this.options.ownerOnly && this.client.options.botOwners != undefined 
-            && this.client.options.botOwners.length > 0 
-            && !this.client.options.botOwners.includes(msg.author.username))
-            return 'This command can be executed only from bot owners';
-
-        if (this.options.modOnly)
-        {
-            var validationPassed = false;
-
-            if (msg.author.isBroadcaster)
-                validationPassed = true;
-            
-            if (msg.author.mod)
-                validationPassed = true;
-
-            if (!validationPassed)
-                return 'This command can be executed only from a mod or the broadcaster';
-        }        
-
-        if (this.options.broadcasterOnly)
-        {
-            if (!msg.author.isBroadcaster)
-                return 'This command can be executed only from the broadcaster';
-        }
-
-        return '';
+  /**
+   * Pre validation before to known if can execute command
+   *
+   * @private
+   * @param {TwitchChatMessage} msg
+   * @returns {String} Validation error. Empty if no error
+   * @memberof TwitchChatCommand
+   */
+  preValidate(msg) {
+    if (msg.messageType != "whisper" && this.options.privmsgOnly) {
+      return "This command is available only via private message";
     }
+
+    if (this.options.botChannelOnly) {
+      if (msg.channel.name != "#" + this.client.getUsername())
+        return (
+          "This command can be executed only in the bot channel. Please head to https://twitch.tv/" +
+          this.client.getUsername()
+        );
+    }
+
+    if (
+      this.options.ownerOnly &&
+      this.client.options.botOwners != undefined &&
+      this.client.options.botOwners.length > 0 &&
+      !this.client.options.botOwners.includes(msg.author.username)
+    )
+      return "This command can be executed only from bot owners";
+
+    if (this.options.modOnly) {
+      var validationPassed = false;
+
+      if (msg.author.isBroadcaster) validationPassed = true;
+
+      if (msg.author.mod) validationPassed = true;
+
+      if (!validationPassed)
+        return "This command can be executed only from a mod or the broadcaster";
+    }
+
+    if (this.options.broadcasterOnly) {
+      if (!msg.author.isBroadcaster)
+        return "This command can be executed only from the broadcaster";
+    }
+
+    return "";
+  }
 }
 
-module.exports = TwichChatCommand;
+module.exports = TwitchChatCommand;
