@@ -4,11 +4,11 @@ const readdir = require("recursive-readdir-sync");
 const path = require("path");
 const { createLogger, format, transports } = require("winston");
 const { combine, timestamp, prettyPrint, simple, splat, colorize } = format;
-var Queue = require('better-queue');
+var Queue = require("better-queue");
 
 const TwitchChatMessage = require("../messages/TwitchChatMessage");
 const TwitchChatChannel = require("../channels/TwitchChatChannel");
-const TwtichChatUser = require("../users/TwitchChatUser");
+const TwitchChatUser = require("../users/TwitchChatUser");
 const CommandParser = require("../commands/CommandParser");
 const TwitchChatCommand = require("../commands/TwitchChatCommand");
 const EmotesManager = require("../emotes/EmotesManager");
@@ -59,12 +59,12 @@ class TwitchCommandoClient extends EventEmitter {
       channels: [],
       prefix: "!",
       greetOnJoin: false,
-      onJoinMessage: '',
+      onJoinMessage: "",
       botOwners: [],
       autoJoinBotChannel: true,
       enableJoinCommand: true,
       botType: CommandoConstants.BOT_TYPE_NORMAL,
-      enableRateLimitingControl: true
+      enableRateLimitingControl: true,
     };
 
     options = Object.assign(defaultOptions, options);
@@ -80,9 +80,9 @@ class TwitchCommandoClient extends EventEmitter {
       transports: [
         new transports.Console({
           level: this.verboseLogging ? "debug" : "info",
-          colorized: true
-        })
-      ]
+          colorized: true,
+        }),
+      ],
     });
     this.channelsWithMod = [];
     this.messagesCounterInterval = null;
@@ -124,36 +124,40 @@ class TwitchCommandoClient extends EventEmitter {
     this.emotesManager = new EmotesManager(this);
     await this.emotesManager.getGlobalEmotes();
 
-    this.logger.info('Current default prefix is ' + this.options.prefix);
+    this.logger.info("Current default prefix is " + this.options.prefix);
 
     this.logger.info("Connecting to Twitch Chat");
 
     var autoJoinChannels = this.options.channels;
 
-    var channelsFromSettings = await this.settingsProvider.get(CommandoConstants.GLOBAL_SETTINGS_KEY, "channels", []);
-    
+    var channelsFromSettings = await this.settingsProvider.get(
+      CommandoConstants.GLOBAL_SETTINGS_KEY,
+      "channels",
+      []
+    );
+
     var channels = [...autoJoinChannels, ...channelsFromSettings];
 
     if (this.options.autoJoinBotChannel) {
       channels.push("#" + this.options.username);
     }
 
-    this.logger.info('Autojoining ' + channels.length + ' channels');
+    this.logger.info("Autojoining " + channels.length + " channels");
 
     this.tmi = new tmi.client({
       options: {
-        debug: this.verboseLogging
+        debug: this.verboseLogging,
       },
       connection: {
         secure: true,
-        reconnect: true
+        reconnect: true,
       },
       identity: {
         username: this.options.username,
-        password: "oauth:" + this.options.oauth
+        password: "oauth:" + this.options.oauth,
       },
       channels: channels,
-      logger: this.logger
+      logger: this.logger,
     });
 
     this.tmi.on("connected", this.onConnect.bind(this));
@@ -170,7 +174,7 @@ class TwitchCommandoClient extends EventEmitter {
 
     this.tmi.on("unmod", this.onUnmod.bind(this));
 
-    this.tmi.on("error", err => {
+    this.tmi.on("error", (err) => {
       this.logger.error(err.message);
       this.emit("error", err);
     });
@@ -201,7 +205,7 @@ class TwitchCommandoClient extends EventEmitter {
       this.messagesCount = this.messagesCount + 1;
 
       return serverResponse;
-    } else this.logger.warn("Rate limit excedeed. Wait for timer reset.");
+    } else this.logger.warn("Rate limit exceeded. Wait for timer reset.");
   }
 
   /**
@@ -226,7 +230,7 @@ class TwitchCommandoClient extends EventEmitter {
       this.messagesCount = this.messagesCount + 1;
 
       return serverResponse;
-    } else this.logger.warn("Rate limit excedeed. Wait for timer reset.");
+    } else this.logger.warn("Rate limit exceeded. Wait for timer reset.");
   }
 
   /**
@@ -253,7 +257,7 @@ class TwitchCommandoClient extends EventEmitter {
 
     //if (this.verboseLogging) this.logger.info(files);
 
-    files.forEach(f => {
+    files.forEach((f) => {
       var commandFile = require(f);
 
       if (typeof commandFile === "function") {
@@ -275,7 +279,7 @@ class TwitchCommandoClient extends EventEmitter {
   findCommand(parserResult) {
     var command = null;
 
-    this.commands.forEach(c => {
+    this.commands.forEach((c) => {
       if (parserResult.command == c.options.name) command = c;
 
       if (
@@ -317,7 +321,7 @@ class TwitchCommandoClient extends EventEmitter {
   onJoin(channel, username) {
     var channelObject = new TwitchChatChannel(
       {
-        name: channel
+        name: channel,
       },
       this
     );
@@ -335,7 +339,7 @@ class TwitchCommandoClient extends EventEmitter {
   }
 
   /**
-   * Bot disonnects
+   * Bot disconnects
    * @event TwitchCommandoClient#disconnected
    * @type {object}
    * @memberof TwitchCommandoClient
@@ -379,7 +383,8 @@ class TwitchCommandoClient extends EventEmitter {
 
     var prefix = await this.settingsProvider.get(
       message.channel.name,
-      "prefix", this.options.prefix
+      "prefix",
+      this.options.prefix
     );
 
     var parserResult = this.parser.parse(messageText, prefix);
@@ -395,10 +400,10 @@ class TwitchCommandoClient extends EventEmitter {
         if (preValidateResponse == "") {
           command
             .prepareRun(message, parserResult.args)
-            .then(commandResult => {
+            .then((commandResult) => {
               this.emit("commandExecuted", commandResult);
             })
-            .catch(err => {
+            .catch((err) => {
               message.reply("Unexpected error: " + err);
               this.emit("commandError", err);
             });
@@ -439,7 +444,7 @@ class TwitchCommandoClient extends EventEmitter {
    *
    * @memberof TwitchCommandoClient
    */
-  registerDetaultCommands() {
+  registerDefaultCommands() {
     this.registerCommandsIn(path.join(__dirname, "../defaultCommands"));
   }
 
@@ -526,7 +531,7 @@ class TwitchCommandoClient extends EventEmitter {
   onUnmod(channel, username) {
     if (username == this.getUsername()) {
       this.logger.debug("Bot has received unmod");
-      this.channelsWithMod = this.channelsWithMod.filter(c => {
+      this.channelsWithMod = this.channelsWithMod.filter((c) => {
         return c != channel;
       });
     }
@@ -539,13 +544,12 @@ class TwitchCommandoClient extends EventEmitter {
    * @memberof TwitchCommandoClient
    */
   startMessagesCounterInterval() {
-
-    if (this.options.enableRateLimitingControl)
-    {
+    if (this.options.enableRateLimitingControl) {
       if (this.verboseLogging)
         this.logger.debug("Starting messages counter interval");
 
-      let messageLimits = CommandoConstants.MESSAGE_LIMITS[this.options.botType];
+      let messageLimits =
+        CommandoConstants.MESSAGE_LIMITS[this.options.botType];
 
       this.messagesCounterInterval = setInterval(
         this.resetMessageCounter.bind(this),
@@ -573,19 +577,16 @@ class TwitchCommandoClient extends EventEmitter {
    * @memberof TwitchCommandoClient
    */
   checkRateLimit() {
+    if (this.options.enableRateLimitingControl) {
+      let messageLimits =
+        CommandoConstants.MESSAGE_LIMITS[this.options.botType];
 
-    if (this.options.enableRateLimitingControl)
-    {
-      let messageLimits = CommandoConstants.MESSAGE_LIMITS[this.options.botType];
-      
       if (this.verboseLogging)
-        this.logger.warn('Messages count: ' + this.messagesCount);
-      
+        this.logger.warn("Messages count: " + this.messagesCount);
+
       if (this.messagesCount < messageLimits.messages) return true;
       else return false;
-    }
-    else
-      return true;
+    } else return true;
   }
 }
 
