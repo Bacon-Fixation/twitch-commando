@@ -336,7 +336,7 @@ Helper method to reply quickly to a message. Create a message to send in the cha
 **Parameters**
 
 - `text` **[String][49]**
-- `addRamndomEmote` (optional, default `false`)
+- `addRandomEmote` (optional, default `false`)
 - `addRandomEmote` **[Boolean][51]** Add random emote to avoid message duplication
 
 ### actionReply
@@ -346,7 +346,7 @@ Helper method to reply quickly to a message with an action
 **Parameters**
 
 - `text` **[String][49]**
-- `addRamndomEmote` (optional, default `false`)
+- `addRandomEmote` (optional, default `false`)
 - `addRandomEmote` **[Boolean][51]** Add random emote to avoid message duplication
 
 ## TwitchChatUser
