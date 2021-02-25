@@ -181,7 +181,7 @@ class TwitchCommandoClient extends EventEmitter {
 
     this.tmi.on("message", this.onMessage.bind(this));
 
-    this.tmi.on("raided",this.onRaided(this))
+    this.tmi.on("raided",this.onRaided.bind(this))
 
     await this.tmi.connect();
   }
