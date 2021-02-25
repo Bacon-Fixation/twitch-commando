@@ -181,7 +181,7 @@ class TwitchCommandoClient extends EventEmitter {
 
     this.tmi.on("message", this.onMessage.bind(this));
 
-    this.tmi.on("raided",this.onRaided.bind(this))
+    this.tmi.on("raided", this.onRaided.bind(this));
 
     await this.tmi.connect();
   }
@@ -418,9 +418,9 @@ class TwitchCommandoClient extends EventEmitter {
 
   onBan(user, reason) {}
 
-  onUnban(user) { }
-  
-  onRaided(channel,username,viewers)
+  onUnban(user) {}
+
+  onRaided(channel, username, viewers) {}
 
   /**
    * Connection timeout
