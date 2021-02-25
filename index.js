@@ -14,6 +14,7 @@ module.exports = {
   TwitchChatMessage,
   TwitchChatUser,
   TwitchChatCommand,
+  CommandParser,
   SettingsProvider,
   CommandoSQLiteProvider,
   CommandoConstants,

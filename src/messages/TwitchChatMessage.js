@@ -14,7 +14,7 @@ class TwitchChatMessage {
    * @param {TwitchCommandoClient} client
    * @memberof TwitchChatMessage
    */
-  constructor(originalMessage, channel, client) {
+  constructor(originalMessage, messageText, channel, client) {
     this.originalMessage = originalMessage;
     this.client = client;
     this._channel = new TwitchChatChannel(
@@ -23,6 +23,7 @@ class TwitchChatMessage {
     );
     this._author = new TwitchChatUser(originalMessage, client);
     this._timestamp = new Date();
+    this._message = messageText;
   }
 
   /**
@@ -33,7 +34,7 @@ class TwitchChatMessage {
    * @return {String}
    */
   get text() {
-    return this.originalMessage.text;
+    return this._message;
   }
 
   /**
