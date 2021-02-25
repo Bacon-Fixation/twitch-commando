@@ -14,7 +14,7 @@ class TwitchChatMessage {
    * @param {TwitchCommandoClient} client
    * @memberof TwitchChatMessage
    */
-  constructor(originalMessage, messageText, channel, client) {
+  constructor(originalMessage, channel, messageText, client) {
     this.originalMessage = originalMessage;
     this.client = client;
     this._channel = new TwitchChatChannel(

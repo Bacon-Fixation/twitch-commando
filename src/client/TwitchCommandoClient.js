@@ -375,7 +375,7 @@ class TwitchCommandoClient extends EventEmitter {
   async onMessage(channel, userstate, messageText, self) {
     if (self) return;
 
-    var message = new TwitchChatMessage(userstate, channel, this);
+    var message = new TwitchChatMessage(userstate, channel, messageText, this);
 
     if (this.verboseLogging) this.logger.info(message);
 
